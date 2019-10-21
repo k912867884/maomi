@@ -1,93 +1,18 @@
 <template>
   <div class="movie_body">
     <ul>
-      <li>
+      <li v-for="item in movieList" :key="item.id">
         <div class="pic_show">
-          <img src="/images/1.png" alt />
+          <img :src="item.img | setWH('128.180')"/>
         </div>
         <div class="info_list">
-          <h2>无名</h2>
+          <h2 v-text="item.nm"></h2><img v-if="item.version" src="@/assets/3d.jpg" alt="">
           <p>
             观众评分：
-            <span class="grade">9.2</span>
+            <span class="grade" v-text="item.sc"></span>
           </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">购票</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
+          <p>主演：<span v-text="item.star"></span></p>
+          <p v-text="item.showInfo"></p>
         </div>
         <div class="btn_mall">购票</div>
       </li>
@@ -95,12 +20,26 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      movieList: []
+    };
+  },
+  mounted() {
+    this.axios.get("/api/movieOnInfoList?cityId=2").then(res => {
+      var msg = res.data.msg;
+      if (msg === "ok") {
+        this.movieList = res.data.data.movieList;
+      }
+    });
+  }
+};
 </script>
 <style scoped>
 .movie_body {
-  display: flex;
-  overflow: auto;
+  width:100%;
+  position:absolute;top:100px;bottom:60px;overflow: auto;
 }
 .movie_body ul {
   margin: 0 12px;

@@ -1,93 +1,19 @@
 <template>
   <div class="movie_body">
     <ul>
-      <li>
+      <li v-for="item in comingList" :key="item.id">
         <div class="pic_show">
-          <img src="/images/1.png" alt />
+          <img :src="item.img | setWH('128.180')" />
         </div>
         <div class="info_list">
-          <h2>无名</h2>
+          <h2 v-text="item.nm"></h2>
+          <img v-if="item.version" src="@/assets/3d.jpg" alt="">
           <p>
-            观众评分：
-            <span class="grade">9.2</span>
+            <span class="grade" v-text="item.wish"></span>
+            人想看
           </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">预约</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">预约</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">预约</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">预约</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
-        </div>
-        <div class="btn_mall">预约</div>
-      </li>
-      <li>
-        <div class="pic_show">
-          <img src="/images/1.png" alt />
-        </div>
-        <div class="info_list">
-          <h2>无名</h2>
-          <p>
-            观众评分：
-            <span class="grade">9.2</span>
-          </p>
-          <p>主演：某人</p>
-          <p>今天播放好多次aaaaaaaaaaa</p>
+          <p>主演：<span v-text="item.star"></span></p>
+          <p> <span class="comingTitle" v-text="item.comingTitle"></span> 上映</p>
         </div>
         <div class="btn_mall">预约</div>
       </li>
@@ -95,12 +21,26 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data(){
+    return {
+      comingList:[]
+    }
+  },
+  mounted(){
+    this.axios.get('/api/movieComingList?cityId=10').then((res)=>{
+      var msg = res.data.msg;
+      if(msg === 'ok'){
+        this.comingList = res.data.data.comingList;
+      }
+    })
+  }
+};
 </script>
 <style scoped>
 .movie_body {
-  display: flex;
-  overflow: auto;
+ overflow:auto;
+ position:absolute;top:90px;bottom:55px;
 }
 .movie_body ul {
   margin: 0 12px;
@@ -139,10 +79,14 @@ export default {};
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.movie_body .info_list p .comingTitle{
+  color:#222;
+}
 .movie_body .info_list .grade {
   font-weight: 700;
   color: #f40;
   font-size: 15px;
+  margin-right:5px;
 }
 .movie_body .info_list img {
   width: 50px;

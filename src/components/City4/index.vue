@@ -4,94 +4,24 @@
       <div class="search">
         <div class="search_input_wrapper">
           <i class="iconfont icon-sousuo"></i>
-          <input type="text" />
+          <input type="text" v-model="message" />
         </div>
       </div>
       <div class="search_result">
         <h3>电影/电视剧/综艺</h3>
         <ul>
-          <li>
+          <li v-for="item in moviesList" :key="item.id">
             <div class="img">
-              <img src="/images/1.png" alt />
+              <img :src="item.img | setWH('128.180')" />
             </div>
             <div class="info">
               <p>
-                <span>无名之辈</span>
-                <span>8.5</span>
+                <span v-text="item.nm"></span>
+                <span v-text="item.sc"></span>
               </p>
-              <p>A ASDLKFJ;</p>
-              <p>剧情，喜剧，犯罪</p>
-              <p>2018-11-16</p>
-            </div>
-          </li>
-          <li>
-            <div class="img">
-              <img src="/images/1.png" alt />
-            </div>
-            <div class="info">
-              <p>
-                <span>无名之辈</span>
-                <span>8.5</span>
-              </p>
-              <p>A ASDLKFJ;</p>
-              <p>剧情，喜剧，犯罪</p>
-              <p>2018-11-16</p>
-            </div>
-          </li>
-          <li>
-            <div class="img">
-              <img src="/images/1.png" alt />
-            </div>
-            <div class="info">
-              <p>
-                <span>无名之辈</span>
-                <span>8.5</span>
-              </p>
-              <p>A ASDLKFJ;</p>
-              <p>剧情，喜剧，犯罪</p>
-              <p>2018-11-16</p>
-            </div>
-          </li>
-          <li>
-            <div class="img">
-              <img src="/images/1.png" alt />
-            </div>
-            <div class="info">
-              <p>
-                <span>无名之辈</span>
-                <span>8.5</span>
-              </p>
-              <p>A ASDLKFJ;</p>
-              <p>剧情，喜剧，犯罪</p>
-              <p>2018-11-16</p>
-            </div>
-          </li>
-          <li>
-            <div class="img">
-              <img src="/images/1.png" alt />
-            </div>
-            <div class="info">
-              <p>
-                <span>无名之辈</span>
-                <span>8.5</span>
-              </p>
-              <p>A ASDLKFJ;</p>
-              <p>剧情，喜剧，犯罪</p>
-              <p>2018-11-16</p>
-            </div>
-          </li>
-          <li>
-            <div class="img">
-              <img src="/images/1.png" alt />
-            </div>
-            <div class="info">
-              <p>
-                <span>无名之辈</span>
-                <span>8.5</span>
-              </p>
-              <p>A ASDLKFJ;</p>
-              <p>剧情，喜剧，犯罪</p>
-              <p>2018-11-16</p>
+              <p v-text="item.enm"></p>
+              <p v-text="item.cat"></p>
+              <p v-text="item.rt"></p>
             </div>
           </li>
         </ul>
@@ -100,7 +30,47 @@
   </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      message: "",
+      moviesList: []
+    };
+  },
+  methods: {
+    cancelRequest() {
+      if (typeof this.source === "function") {
+        this.source("终止请求");
+      }
+    }
+  },
+  watch: {
+    message(newVal) {
+      this.cancelRequest();
+      this.axios.get
+        ("/api/searchList?cityId=10&kw=" + newVal, {
+          cancelToken: new this.axios.CancelToken((c)=>{
+            this.source = c;
+          })
+        })
+        .then(res => {
+          var msg = res.data.msg;
+          var movies = res.data.data.movies;
+          if (msg && movies) {
+            this.moviesList = movies.list;
+          }
+        })
+        .catch(err => {
+          if (this.axios.isCancel(err)) {
+            console.log("Rquest canceled", err.message); //请求如果被取消，这里是返回取消的message
+          } else {
+            //handle error
+            console.log(err);
+          }
+        });
+    }
+  }
+};
 </script>
 <style  scoped>
 .search_body {
@@ -110,9 +80,14 @@ export default {};
   background-color: #f5f5f5;
   border-bottom: 1px solid #e5e5e5;
 }
-.search_body .search_result .img img {
-  width: 100px;
+.search_body .search_result {
+  overflow: auto;
+  position: absolute;
+  top: 150px;
+  bottom: 45px;
+  width: 100%;
 }
+
 .search_body .search_input_wrapper {
   background-color: #e5e5e5;
   padding: 10px 25px;
@@ -131,6 +106,7 @@ export default {};
   width: 100%;
   height: 30px;
   border: none;
+  padding-left: 30px;
 }
 .search_body .search_result h3 {
   font-size: 15px;
@@ -142,14 +118,41 @@ export default {};
   border-bottom: 1px solid #e5e5e5;
 }
 .search_body .search_result li {
-  display:flex;color:#787878;border-bottom:1px solid #a5a5a5;padding:10px 15px;display:flex;
-  box-sizing:border-box;
+  display: flex;
+  color: #787878;
+  border-bottom: 1px solid #a5a5a5;
+  padding: 10px 15px;
+  display: flex;
+  box-sizing: border-box;
 }
-.search_body .search_result .info{
-  margin-left:10px;
+.search_body .search_result .info {
+  margin-left: 10px;
+  margin-top: 10px;
 }
-.info p{height:22px;display:flex;line-height:22px;font-size:12px;}
-.info p:nth-of-type(1) span:nth-of-type(1){font-size:18px;color:black;}
-.info p:nth-of-type(1) span:nth-of-type(2){font-size:16px;color:#fc7183;margin-left:120px;}
-.info p:nth-of-type(3){font-size:16px;color:black;}
+.search_body .info p {
+  height: 22px;
+  display: flex;
+  line-height: 22px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  justify-content: space-between;
+  width: 100%;
+}
+.info p:nth-of-type(1) span:nth-of-type(1) {
+  font-size: 18px;
+  color: black;
+  font-weight: bold;
+}
+.info p:nth-of-type(1) span:nth-of-type(2) {
+  font-size: 16px;
+  color: #fc7183;
+}
+.info p:nth-of-type(2){
+  width:200px;
+  white-space: nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.info p:nth-of-type(3) {
+  font-size: 16px;
+  color: black;
+}
 </style>
