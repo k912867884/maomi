@@ -1,8 +1,9 @@
 <template>
-  <div class="movie_body">
+  <div class="movie_body" ref="movie_body">
     <ul>
+      <li class="pullDown" v-text="pullDownMsg"></li>
       <li v-for="item in movieList" :key="item.id">
-        <div class="pic_show">
+        <div class="pic_show" @tap="handleToDetail">
           <img :src="item.img | setWH('128.180')"/>
         </div>
         <div class="info_list">
@@ -20,17 +21,47 @@
   </div>
 </template>
 <script>
+import BScroll from 'better-scroll';
 export default {
   data() {
     return {
-      movieList: []
+      movieList: [],
+      pullDownMsg:""
     };
+  },
+  methods:{
+    handleToDetail(){
+      console.log(123);
+    }
   },
   mounted() {
     this.axios.get("/api/movieOnInfoList?cityId=2").then(res => {
       var msg = res.data.msg;
       if (msg === "ok") {
         this.movieList = res.data.data.movieList;
+        this.$nextTick(()=>{
+          var scroll = new BScroll(this.$refs.movie_body,{tap:true,probeType:1})
+          scroll.on('scroll',(pos)=>{
+            if(pos.y > 30){
+              this.pullDownMsg="努力更新中"
+            }
+          });
+          scroll.on('touchEnd',(pos)=>{
+            if(pos.y >30){
+              this.axios.get("/api/movieOnInfoList?cityId=6").then(res => {
+                 var msg = res.data.msg;
+                   if (msg === "ok") {
+                    this.pullDownMsg='更新成功'
+                    setTimeout(()=>{
+                      this.movieList = res.data.data.movieList;
+                      this.pullDownMsg ='';
+                    },1000)
+                  
+                  }
+              })
+            }
+          })
+        })
       }
     });
   }
@@ -39,7 +70,7 @@ export default {
 <style scoped>
 .movie_body {
   width:100%;
-  position:absolute;top:100px;bottom:60px;overflow: auto;
+  position:absolute;top:90px;bottom:60px;overflow: auto;
 }
 .movie_body ul {
   margin: 0 12px;
@@ -96,5 +127,8 @@ export default {
   text-align: center;
   background-color: #f40;
   margin-left: 23px;
+}
+.movie_body .pullDown{
+  margin:0;padding:0;border:none;
 }
 </style>
