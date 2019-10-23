@@ -19,6 +19,15 @@ export default {
       component:()=>import("@/components/City4")
     },
     {
+      path:'detail/:movieId',
+      components:{
+        detail:()=> import('@/views/Movie/detail')
+      },
+      props:{
+        detail:true
+      }
+    },
+    {
       path:"/movie",
       redirect:"/movie/city2"
     }

@@ -3,11 +3,11 @@
     <ul>
       <li class="pullDown" v-text="pullDownMsg"></li>
       <li v-for="item in movieList" :key="item.id">
-        <div class="pic_show" @tap="handleToDetail">
+        <div class="pic_show" @tap="handleToDetail(item.id)">
           <img :src="item.img | setWH('128.180')"/>
         </div>
         <div class="info_list">
-          <h2 v-text="item.nm"></h2><img v-if="item.version" src="@/assets/3d.jpg" alt="">
+          <h2 v-text="item.nm" @tap="handleToDetail(item.id)"></h2><img v-if="item.version" src="@/assets/3d.jpg" alt="">
           <p>
             观众评分：
             <span class="grade" v-text="item.sc"></span>
@@ -30,8 +30,9 @@ export default {
     };
   },
   methods:{
-    handleToDetail(){
-      console.log(123);
+    handleToDetail(movieId){
+      // console.log(movieId);
+      this.$router.push('/movie/detail/'+movieId)
     }
   },
   mounted() {

@@ -1,6 +1,7 @@
 <template>
   <header id="header">
-    <h2 v-text="title"></h2>
+    <slot></slot>
+   <h2 v-text="title"></h2>
   </header>
 </template>
 <script>
@@ -16,6 +17,6 @@ export default {
 <style scoped>
 #header{
   width:100%;height:50px;color:#fff;background-color:#f40;
-  text-align:center;line-height:50px;font-size:15px;
+  line-height:50px;font-size:15px;display:flex;justify-content: center;
 }
 </style>
